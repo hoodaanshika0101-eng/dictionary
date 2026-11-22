@@ -8,7 +8,8 @@ function render(){
  if(!v){out.innerHTML=D.map(card).join("");return}
  const r=search(v);
  if(!r.length){out.innerHTML="";return}
- out.innerHTML=`<h2>${r.length} result${r.length>1?"s":""}</h2>`+r.map(x=>card(x[1])).join("");
+ const fuzzy=r[0][0]>=3;
+ out.innerHTML=(fuzzy?`<h2>No exact match — did you mean…</h2>`:`<h2>${r.length} result${r.length>1?"s":""}</h2>`)+r.map(x=>card(x[1])).join("");
 }
 // ---- Detail screen ----
 function showDetail(id){

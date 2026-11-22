@@ -11,6 +11,8 @@ const fold=s=>{
   .replace(/gy|gn/g,"jn").replace(/([bcdfghjklmnpqstvyz])r[iu]/g,"$1r").replace(/sv/g,"s");
  return s.length>3?s.replace(/a$/,""):s; // schwa deletion: dharma ~ dharm
 };
+const lev=(a,b)=>{const m=a.length,n=b.length;let p=Array.from({length:n+1},(_,j)=>j);
+ for(let i=1;i<=m;i++){const c=[i];for(let j=1;j<=n;j++)c[j]=Math.min(p[j]+1,c[j-1]+1,p[j-1]+(a[i-1]===b[j-1]?0:1));p=c}return p[n]};
 const D=RAW.map(([headword,transliteration,romanised,pos,meanings,example],i)=>({id:i+1,headword,transliteration,romanised,pos,meanings,example,
  h:nd(headword),keys:[...new Set([...romanised,transliteration].map(fold))]}));
 // ---- Search ----
@@ -18,15 +20,18 @@ function search(raw){
  const q0=raw.trim();if(!q0)return[];let res=[];
  if(/[\u0900-\u097F]/.test(q0)){
   const q=nd(q0);
-  res=D.map(e=>{const h=e.h;let s=h===q?0:h.startsWith(q)?1:h.includes(q)?2:99;return[s,e]});
+  res=D.map(e=>{const h=e.h;let s=h===q?0:h.startsWith(q)?1:h.includes(q)?2:99;
+   if(s===99&&q.length>=3){const d=lev(h,q);if(d<=1)s=3+d}return[s,e]});
  }else{
   const lo=q0.toLowerCase(),q=fold(q0);if(!q)return[];
+  const mx=q.length<=3?0:q.length<=5?1:2;
   res=D.map(e=>{let s=99;
    if(e.romanised.includes(lo))s=0;
    for(const k of e.keys){
     if(k===q)s=Math.min(s,.5);
     else if(q.length>=2&&k.startsWith(q))s=Math.min(s,1);
-    else if(q.length>=3&&k.includes(q))s=Math.min(s,2)}
+    else if(q.length>=3&&k.includes(q))s=Math.min(s,2);
+    else{const d=lev(k,q);if(d<=mx)s=Math.min(s,3+d)}}
    return[s,e]});
  }
  return res.filter(r=>r[0]<99).sort((a,b)=>a[0]-b[0]||a[1].id-b[1].id).slice(0,25);
