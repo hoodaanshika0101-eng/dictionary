@@ -5,9 +5,9 @@ const card=e=>`<button class="card" data-id="${e.id}"><span class="hw dv">${e.he
 const chips=a=>`<div class="chips">${a.map(x=>`<button class="chip dv" data-q="${esc(x)}">${esc(x)}</button>`).join("")}</div>`;
 function render(){
  const v=q.value.trim();
- if(!v){out.innerHTML=D.map(card).join("");return}
+ if(!v){out.innerHTML=`<h2>Try these</h2>${chips(["धर्म","dharma","dharm","gyan","vriksh","shanti","love","tree"])}<h2>All words (${D.length})</h2>`+D.map(card).join("");return}
  const r=search(v);
- if(!r.length){out.innerHTML="";return}
+ if(!r.length){out.innerHTML=`<div class="empty"><b>No results for “${esc(v)}”</b>Check the spelling, or try a different form, e.g. <i>dharm</i> for <span class="dv">धर्म</span>, or an English word like “tree”.<div style="margin-top:14px"><button class="chip" id="all">Browse all words</button></div></div>`;return}
  const fuzzy=r[0][0]>=3;
  out.innerHTML=(fuzzy?`<h2>No exact match — did you mean…</h2>`:`<h2>${r.length} result${r.length>1?"s":""}</h2>`)+r.map(x=>card(x[1])).join("");
 }
@@ -30,7 +30,9 @@ addEventListener("hashchange",route);
 // ---- Events ----
 q.addEventListener("input",()=>render());
 out.addEventListener("click",ev=>{
- const c=ev.target.closest(".card");
+ const c=ev.target.closest(".card"),ch=ev.target.closest("[data-q]");
  if(c)location.hash="w"+c.dataset.id;
+ else if(ch){q.value=ch.dataset.q;render();scrollTo(0,0)}
+ else if(ev.target.id==="all"){q.value="";render()}
 });
 render();route();
