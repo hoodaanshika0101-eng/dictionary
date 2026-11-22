@@ -36,7 +36,7 @@ Devanagari input is normalised too (nukta and zero-width joiners removed, chandr
 
 ## Links
 - Deployed app: https://hoodaanshika0101-eng.github.io/dictionary/
-- Demo video: <add link>
+- Demo video: https://drive.google.com/file/d/19AV0e-AjODaPCLbYdndTol-5Nza4QIRW/view?usp=sharing
 
 ## AI use
 Built with AI coding tools (Claude). Search behaviour was tested with real Devanagari and romanised examples, and the work was committed in small steps.
